@@ -13,6 +13,22 @@ namespace LinqExercises
                 p.Print();
             }
 
+            Console.WriteLine();
+            Console.WriteLine("-------------");
+            Console.WriteLine();
+
+            ProductsDatabase.ReadFromXml("CategoriesWithProducts.xml");
+
+            foreach (Category category in ProductsDatabase.Categories)
+            {
+                category.Print();
+            }
+
+            foreach (Product product in ProductsDatabase.Products)
+            {
+                product.Print();
+            }
+
             Console.WriteLine("Press any key to close...");
             Console.ReadKey();
         }

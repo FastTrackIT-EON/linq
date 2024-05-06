@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database>
+    <Categories>
+        <Category id="1" name="Laptopuri" />
+        <Category id="2" name="Telefoane" />
+        <Category id="3" name="Tablete" />
+        <Category id="20" name="Articole de Imbracaminte" />
+    </Categories>
+    <Products>
+        <!-- Laptops -->
+        <Product id="1" name="Lenovo IdeaPad" categoryId="1" />
+        <Product id="2" name="HP Envy" categoryId="1" />
+        <Product id="3" name="Dell Latitude" categoryId="1" />
+        <!-- Phones -->
+        <Product id="4" name="Samsung Galaxy Phone" categoryId="2" />
+        <Product id="5" name="Huawei Phone" categoryId="2" />
+        <Product id="6" name="Xiaomi Phone" categoryId="2" />
+        <Product id="7" name="Nokia Phone" categoryId="2" />
+        <Product id="8" name="iPhone" categoryId="2" />
+        <!-- Tablets -->
+        <Product id="9" name="Samsung Galaxy Tab" categoryId="3" />
+        <Product id="10" name="Huawei Tablet" categoryId="3" />
+        <Product id="11" name="Lenovo Tablet" categoryId="3" />
+        <Product id="12" name="iPad" categoryId="3" />
+        <!-- With non-existing category -->
+        <Product id="100" name="Frigider" categoryId="100" />
+    </Products>
+</Database>
