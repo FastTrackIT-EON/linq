@@ -105,6 +105,51 @@ namespace LinqExercises
             PersonsDatabase.Persons = new List<Person>(xmlPersons);
         }
 
+        public static void SaveToXmlUsingLinq(string fileName)
+        {
+            // <Persons>
+            //   <Person firstName="John" lastName="Doe" gender="Male" dateOfBirth="1970-11-21"></Person>
+            // </Persons>
+
+            XElement persons = new XElement("Persons");
+            foreach (var p in PersonsDatabase.Persons)
+            {
+                XElement person = new XElement("Person");
+                person.Add(new XAttribute("firstName", p.FirstName));
+                person.Add(new XAttribute("lastName", p.LastName));
+                person.Add(new XAttribute("gender", Enum.Format(typeof(Gender), p.Gender, "G")));
+                person.Add(new XAttribute("dateOfBirth", p.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)));
+
+                persons.Add(person);
+            }
+
+            persons.Save(fileName);
+        }
+
+        public static void SaveToXmlUsingXmlWriter(string fileName)
+        {
+            // <Persons>
+            //   <Person firstName="John" lastName="Doe" gender="Male" dateOfBirth="1970-11-21"></Person>
+            // </Persons>
+
+            using (XmlWriter writer = XmlWriter.Create(fileName))
+            {
+                writer.WriteStartElement("Persons");
+
+                foreach (Person person in PersonsDatabase.Persons)
+                {
+                    writer.WriteStartElement("Person");
+                    writer.WriteAttributeString("firstName", person.FirstName);
+                    writer.WriteAttributeString("lastName", person.LastName);
+                    writer.WriteAttributeString("gender", Enum.Format(typeof(Gender), person.Gender, "G"));
+                    writer.WriteAttributeString("dateOfBirth", person.DateOfBirth.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+                    writer.WriteEndElement();
+                }
+
+                writer.WriteEndElement();
+            }
+        }
+
         [Serializable, XmlRoot(ElementName = "Persons")]
         public class SerializablePersonCollection
         {

@@ -13,6 +13,8 @@ namespace LinqExercises
                 p.Print();
             }
 
+            PersonsDatabase.SaveToXmlUsingXmlWriter("PersonsXmlWriter.xml");
+
             Console.WriteLine();
             Console.WriteLine("-------------");
             Console.WriteLine();
