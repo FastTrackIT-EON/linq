@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace LinqExercises
 {
@@ -45,6 +46,46 @@ namespace LinqExercises
         public void Print()
         {
             Console.WriteLine($"{FullName} date of birth: {DateOfBirth:yyyy-MM-dd}, age: {Age}");
+        }
+
+        internal static bool TryCreate(
+            string firstName,
+            string lastName,
+            string genderString,
+            string dateOfBirthString,
+            out Person result)
+        {
+            result = null;
+
+            if (string.IsNullOrEmpty(firstName))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(lastName))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(genderString) ||
+                !Enum.TryParse(genderString, out Gender parsedGender))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(dateOfBirthString) ||
+                !DateTime.TryParseExact(
+                    dateOfBirthString,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out DateTime parsedDateOfBirth))
+            {
+                return false;
+            }
+
+            result = new Person(firstName, lastName, parsedDateOfBirth, parsedGender);
+            return true;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace LinqExercises
     {
         static void Main(string[] args)
         {
-            PersonsDatabase.ReadFromXml("Persons.xml");
+            PersonsDatabase.ReadFromXmlUsingXmlDeserialization("Persons.xml");
 
             foreach (Person p in PersonsDatabase.Persons)
             {
