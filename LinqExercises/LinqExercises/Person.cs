@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.Remoting;
 
 namespace LinqExercises
 {
-    public class Person
+    public class Person : IComparable<Person>, IEquatable<Person>
     {
         public Person(
             string firstName,
@@ -28,7 +29,7 @@ namespace LinqExercises
         }
 
         public string FullName
-            => $"{FirstName} {LastName}";
+            => $"{LastName} {FirstName}";
 
         public Gender Gender
         {
@@ -86,6 +87,64 @@ namespace LinqExercises
 
             result = new Person(firstName, lastName, parsedDateOfBirth, parsedGender);
             return true;
+        }
+
+        public int CompareTo(Person other)
+        {
+            // Less than zero: This instance precedes other in the sort order.
+            // Zero: This instance occurs in the same position in the sort order as other.
+            // Greater than zero: This instance follows other in the sort order.
+            
+            if (other is null)
+            {
+                // null is less than something
+                return -1;
+            }
+
+            // DateTimes are compared by number of ticks that passed since Year 1
+            int orderByTicks = this.DateOfBirth.CompareTo(other.DateOfBirth);
+            return -orderByTicks;
+
+            /*
+            if (this.Age < other.Age)
+            {
+                // this person is younger than the other person
+                return -1;
+            }
+            else if (this.Age == other.Age)
+            {
+                return this.DateOfBirth.Month.CompareTo(other.DateOfBirth.Month);
+            }
+            else
+            {
+                // this person is older than the other person
+                return 1;
+            }
+            */
+        }
+
+        public bool Equals(Person other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            return string.Equals(this.FirstName, other.FirstName, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(this.LastName, other.LastName, StringComparison.OrdinalIgnoreCase) &&
+                    this.DateOfBirth == other.DateOfBirth &&
+                    this.Gender == other.Gender;
+
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Person);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(FirstName, LastName, DateOfBirth, Gender);
         }
     }
 }

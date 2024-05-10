@@ -16,8 +16,14 @@ namespace LinqExercises
             // Example_2_Where_WithPersons();
             // Example_3_OfType_WithPersons();
             // Example_3_OfType_WithObjects();
-
-            Example_5_Select_ProjectDateOfBirths();
+            // Example_5_Select_ProjectDateOfBirths();
+            // Example_6_SelectMany_FromNumberCreateMultipleNumbers();
+            // Example_7_SelectMany_CartesianProduct();
+            // Example_8_OrderBy_WithPersons();
+            // Example_9_OrderBy_WithIComparable();
+            // Example_10_GroupBy_PersonsFromMonth();
+            // Example_11_Take_WithPersons();
+            Example_12_Union_WithPersons();
 
             //foreach (Person p in PersonsDatabase.Persons)
             //{
@@ -190,5 +196,160 @@ namespace LinqExercises
             }
         }
 
+
+        private static void Example_6_SelectMany_FromNumberCreateMultipleNumbers()
+        {
+            int[] numbers = { 1, 2, 3 };
+
+            // =>
+            // result = { 1, 1, 1, 2, 4, 8, 3, 9, 27 }
+
+            /*
+            var query = from nr in numbers
+                        from powers in new int[] { nr, nr * nr, nr * nr * nr }
+                        select powers;
+            */
+
+            var query = numbers.SelectMany(nr => new int[] { nr, nr * nr, nr * nr * nr });
+
+            Console.WriteLine(string.Join(", ", query));
+
+        }
+
+        private static void Example_7_SelectMany_CartesianProduct()
+        {
+            int[] a = { 1, 2 };
+            int[] b = { 4, 5, 6 };
+
+            // a x b = [ (1, 4), (1, 5), (1, 6), (2, 4), (2, 5), (2, 6) ]
+
+            /*
+            var query = from elem1 in a
+                        from elem2 in b
+                        select $"({elem1}, {elem2})";
+            */
+
+            var query = a.SelectMany(
+                elem1 => b,
+                (elem1, elem2) => $"({elem1}, {elem2})");
+
+            Console.WriteLine(string.Join(", ", query));
+        }
+
+        private static void Example_8_OrderBy_WithPersons()
+        {
+            /*
+            var query = from p in PersonsDatabase.Persons
+                        where (p.Age >= 20) && (p.Age <= 40)
+                        orderby p.Age ascending, p.LastName descending
+                        select p;
+            */
+
+            var query = PersonsDatabase.Persons
+                .Where(p => (p.Age >= 20) && (p.Age <= 40))
+                .OrderBy(p => p.Age).ThenByDescending(p => p.LastName);
+
+            foreach (var result in query)
+            {
+                result.Print();
+            }
+        }
+
+        private static void Example_9_OrderBy_WithIComparable()
+        {
+            var query = PersonsDatabase.Persons
+                .Where(p => (p.Age >= 20) && (p.Age <= 40))
+                .OrderBy(p => p);
+
+            foreach (var result in query)
+            {
+                result.Print();
+            }
+        }
+
+        private static void Example_10_GroupBy_PersonsFromMonth()
+        {
+            /*
+            var query = from p in PersonsDatabase.Persons
+                        where p.Age > 30
+                        group p by p.DateOfBirth.Month into monthGroup
+                        orderby monthGroup.Key ascending
+                        select monthGroup;
+            */
+
+            /*
+            var query = (
+                        from p in PersonsDatabase.Persons
+                        where p.Age > 30
+                        group p by p.DateOfBirth.Month
+                        ).OrderBy(g => g.Key);
+            */
+
+            PersonsDatabase.Persons.Add(new Person(
+                firstName: "Deborah",
+                lastName: "Rodriguez",
+                dateOfBirth: new DateTime(1995, 12, 26),
+                gender: Gender.Female));
+
+            var query = PersonsDatabase.Persons
+                //.Where(p => p.Age > 30)
+                .GroupBy(p => p)
+                .OrderBy(gr => gr.Key);
+
+            foreach (var group in query)
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Month: {group.Key}");
+                foreach (var person in group)
+                {
+                    person.Print();
+                }
+            }
+        }
+
+        private static void Example_11_Take_WithPersons()
+        {
+            // var query = PersonsDatabase.Persons.Take(10);
+            var query = PersonsDatabase.Persons.TakeWhile(p => p.Gender == Gender.Male);
+
+            foreach (var result in query)
+            {
+                result.Print();
+            }
+        }
+
+        private static void Example_12_Union_WithPersons()
+        {
+            List<Person> list1 = new List<Person>
+            {
+                new Person(
+                    firstName: "Deborah",
+                    lastName: "Rodriguez",
+                    dateOfBirth: new DateTime(1995, 12, 26),
+                    gender: Gender.Female),
+
+                new Person(
+                    firstName: "Christopher",
+                    lastName: "Hernandez",
+                    dateOfBirth: new DateTime(1998, 09, 10),
+                    gender: Gender.Male)
+            };
+
+            List<Person> list2 = new List<Person>
+            {
+                new Person(
+                    firstName: "Deborah",
+                    lastName: "Rodriguez",
+                    dateOfBirth: new DateTime(1995, 12, 26),
+                    gender: Gender.Female)
+            };
+
+            var query = list1.Union(list2);
+
+            foreach (var result in query)
+            {
+                result.Print();
+            }
+        }
     }
 }
