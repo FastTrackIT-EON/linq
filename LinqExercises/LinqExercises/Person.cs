@@ -123,6 +123,7 @@ namespace LinqExercises
             */
         }
 
+
         public bool Equals(Person other)
         {
             if (other is null)
@@ -146,5 +147,6 @@ namespace LinqExercises
         {
             return HashCode.Combine(FirstName, LastName, DateOfBirth, Gender);
         }
+        
     }
 }

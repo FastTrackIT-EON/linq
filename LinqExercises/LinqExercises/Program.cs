@@ -23,7 +23,19 @@ namespace LinqExercises
             // Example_9_OrderBy_WithIComparable();
             // Example_10_GroupBy_PersonsFromMonth();
             // Example_11_Take_WithPersons();
-            Example_12_Union_WithPersons();
+            // Example_12_Union_WithPersons();
+            // Example_13_Except_WithPersons();
+            // Example_14_Distinct_WithPersons();
+            // Example_15_DefaultIfEmpty_WithPersons();
+            // Example_16_Zip_WithNumbersAndStrings();
+            // Example_17_CustomMatching();
+            // Example_18_Min_WithStrings();
+            // Example_18_First_WithPersons();
+            // Example_19_Single_WithPersons();
+            // Example_20_Contains_WithPersons();
+            // Example_InnerJoin_ProductsWithCategories();
+            // Example_GroupJoin_CategoriesWithCorrespondingProducts();
+            Example_GroupJoin_AllProductsWithCategories();
 
             //foreach (Person p in PersonsDatabase.Persons)
             //{
@@ -349,6 +361,354 @@ namespace LinqExercises
             foreach (var result in query)
             {
                 result.Print();
+            }
+        }
+
+        private static void Example_13_Except_WithPersons()
+        {
+            List<Person> list1 = new List<Person>
+            {
+                new Person(
+                    firstName: "Deborah",
+                    lastName: "Rodriguez",
+                    dateOfBirth: new DateTime(1995, 12, 26),
+                    gender: Gender.Female),
+
+                new Person(
+                    firstName: "Christopher",
+                    lastName: "Hernandez",
+                    dateOfBirth: new DateTime(1998, 09, 10),
+                    gender: Gender.Male)
+            };
+
+            List<Person> list2 = new List<Person>
+            {
+                new Person(
+                    firstName: "Deborah",
+                    lastName: "Rodriguez",
+                    dateOfBirth: new DateTime(1995, 12, 26),
+                    gender: Gender.Female)
+            };
+
+            var query = list1.Except(list2);
+
+            foreach (var result in query)
+            {
+                result.Print();
+            }
+        }
+
+        private static void Example_14_Distinct_WithPersons()
+        {
+            List<Person> list1 = new List<Person>
+            {
+                new Person(
+                    firstName: "Deborah",
+                    lastName: "Rodriguez",
+                    dateOfBirth: new DateTime(1995, 12, 26),
+                    gender: Gender.Female),
+
+                new Person(
+                    firstName: "Christopher",
+                    lastName: "Hernandez",
+                    dateOfBirth: new DateTime(1998, 09, 10),
+                    gender: Gender.Male),
+
+                new Person(
+                    firstName: "Christopher",
+                    lastName: "Hernandez",
+                    dateOfBirth: new DateTime(1998, 09, 10),
+                    gender: Gender.Male),
+
+                new Person(
+                    firstName: "Christopher",
+                    lastName: "Hernandez",
+                    dateOfBirth: new DateTime(1998, 09, 10),
+                    gender: Gender.Male)
+            };
+
+            var query = list1.Distinct();
+
+            foreach (var result in query)
+            {
+                result.Print();
+            }
+        }
+
+        private static void Example_15_DefaultIfEmpty_WithPersons()
+        {
+            var query = PersonsDatabase.Persons
+                .Where(p => p.Age == 150)
+                .DefaultIfEmpty(
+                    new Person(
+                        firstName: "N/A",
+                        lastName: "N/A",
+                        dateOfBirth: DateTime.MinValue,
+                        gender: default));
+
+            foreach (var result in query)
+            {
+                result.Print();
+            }
+        }
+
+        private static void Example_16_Zip_WithNumbersAndStrings()
+        {
+            string[] labels = { "One", "Two", "Three" };
+            int[] numbers =   { 1, 2, 3, 4, 5 };
+
+            var query = labels.Zip(
+                numbers,
+                (lbl, nr) => $"{lbl}{nr}");
+
+            foreach (var result in query)
+            {
+                Console.WriteLine(result);
+            }
+        }
+
+        private static void Example_17_CustomMatching()
+        {
+            string[] labels = { "One", "Two", "Three" };
+            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            // 0 => 0, 1
+            // 1 => 2, 3
+            // 2 => 4, 5
+            // 3 => 6, 7
+
+            var numbersWithIndex = numbers.Select((nr, idxNr) => new { Value = nr, Index = idxNr });
+            var query = labels.SelectMany(
+                (lbl, idxLbl) => numbersWithIndex.Where(nr => (nr.Index >= idxLbl * 2) &&
+                                                              (nr.Index <= idxLbl * 2 + 1)),
+                (lbl, nr) => new
+                {
+                    Label = lbl,
+                    Value = nr.Value
+                })
+                .GroupBy(x => x.Label);
+
+
+            // (0, 0), (0, 1)
+            // (1, 2), (1, 3) ...
+            
+            foreach (var result in query)
+            {
+                Console.WriteLine($"{result.Key}:");
+                Console.WriteLine(string.Join(",", result.Select(r => r.Value)));
+            }
+        }
+
+        private static void Example_18_Min_WithStrings()
+        {
+            List<string> words = new List<string>
+            {
+                "ana", "ene", "maria", "tudor"
+            };
+
+            string min = words.Max();
+
+            Console.WriteLine(min ?? "(null)");
+
+            Person minPerson = PersonsDatabase.Persons.Min();
+            minPerson.Print();
+
+            PersonsDatabase.Persons.Average(p => p.Age);
+
+
+            int personsCount = PersonsDatabase.Persons.Count();
+
+            int aggregateCount = PersonsDatabase.Persons.Aggregate(
+                0,
+                (prevCount, person) => prevCount + 1);
+
+            Console.WriteLine(personsCount);
+            Console.WriteLine(aggregateCount);
+        }
+
+        private static void Example_18_First_WithPersons()
+        {
+            Person firstPerson = PersonsDatabase.Persons.First();
+            firstPerson.Print();
+
+            Person firstOfOver40Years = PersonsDatabase.Persons.First(p => p.Age >= 40);
+            firstOfOver40Years.Print();
+
+            // attention: if the collection has no elements, First() throws InvalidOperationException
+            /*
+            Person firstNonExisting = PersonsDatabase.Persons
+                .Where(p => string.Equals(p.FirstName, "XYZ", StringComparison.OrdinalIgnoreCase))
+                .First();
+
+            firstNonExisting.Print();
+            */
+
+            Person firstNonExisting = PersonsDatabase.Persons
+                .Where(p => string.Equals(p.FirstName, "XYZ", StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
+
+            if (firstNonExisting is null)
+            {
+                Console.WriteLine("No person has FirstName=XYZ");
+            }
+            else
+            {
+                firstNonExisting.Print();
+            }
+            
+        }
+
+        private static void Example_19_Single_WithPersons()
+        {
+            int[] numbers = { 1 };
+
+            // works if the collection has a single element
+            int result1 = numbers.Single();
+            Console.WriteLine(result1);
+
+            // works if the condition returns a single element
+            numbers = new[] { 1, 2, 3, 5, 7 };
+            int result2 = numbers.Single(x => x %2 == 0);
+            Console.WriteLine(result2);
+
+            // doesn't work when the collection has multiple elements
+            //int result3 = numbers.Single();
+            //Console.WriteLine(result3);
+
+            // doesn't work when the collection has multiple matching elements
+            //int result3 = numbers.Single(x => x % 2 != 0);
+            //Console.WriteLine(result3);
+
+            numbers = new int[0];
+            int result3 = numbers.SingleOrDefault();
+            Console.WriteLine(result3);
+
+            numbers = new[] { 1, 2, 3, 5, 7 };
+            int result4 = numbers.SingleOrDefault(x => x % 8 == 0);
+            Console.WriteLine(result4);
+        }
+
+        private static void Example_20_Contains_WithPersons()
+        {
+            Person firstPerson = PersonsDatabase.Persons.First();
+            firstPerson.Print();
+            Console.WriteLine($"Contains first person: {PersonsDatabase.Persons.Contains(firstPerson)}");
+
+            Person firstPersonClone = new Person(
+                firstName: "James",
+                lastName: "Smith",
+                dateOfBirth: new DateTime(1990, 12, 23),
+                gender: Gender.Male);
+            firstPersonClone.Print();
+            Console.WriteLine($"Contains first person: {PersonsDatabase.Persons.Contains(firstPersonClone)}");
+        }
+
+        private static void Example_InnerJoin_ProductsWithCategories()
+        {
+            /*
+            var query = from prod in ProductsDatabase.Products
+                        join cat in ProductsDatabase.Categories on prod.CategoryId equals cat.Id
+                        select new
+                        {
+                            ProductId = prod.Id,
+                            ProductName = prod.Name,
+                            CategoryId = cat.Id,
+                            CategoryName = cat.Name
+                        };
+            */
+
+            var query = ProductsDatabase.Products
+                .Join(
+                    ProductsDatabase.Categories,
+                    prod => prod.CategoryId,
+                    cat => cat.Id,
+                    (prod, cat) => new
+                    {
+                        ProductId = prod.Id,
+                        ProductName = prod.Name,
+                        CategoryId = cat.Id,
+                        CategoryName = cat.Name
+                    });
+
+            foreach (var result in query)
+            {
+                Console.WriteLine($"ProductId: {result.ProductId}, ProductName: {result.ProductName}, CategoryId: {result.CategoryId}, CategoryName: {result.CategoryName}");
+            }
+
+        }
+
+        private static void Example_GroupJoin_CategoriesWithCorrespondingProducts()
+        {
+            /*
+            var query = from cat in ProductsDatabase.Categories
+                        join prod in ProductsDatabase.Products on cat.Id equals prod.CategoryId into categoryGroup
+                        select new
+                        {
+                            CategoryName = cat.Name,
+                            Products = categoryGroup
+                        };
+            */
+
+            var query = ProductsDatabase.Categories
+                .GroupJoin(
+                    ProductsDatabase.Products,
+                    cat => cat.Id,
+                    prod => prod.CategoryId,
+                    (cat, prodList) => new
+                    {
+                        CategoryName = cat.Name,
+                        Products = prodList
+                    });
+
+            foreach (var result in query)
+            {
+                Console.WriteLine(result.CategoryName);
+                foreach (var item in result.Products)
+                {
+                    Console.WriteLine($"#{item.Id} - {item.Name}");
+                }
+            }
+        }
+
+        private static void Example_GroupJoin_AllProductsWithCategories()
+        {
+            /*
+            var query = from prod in ProductsDatabase.Products
+                        join cat in ProductsDatabase.Categories on prod.CategoryId equals cat.Id into prodCatGroup
+                        from atLeastOneCat in prodCatGroup.DefaultIfEmpty(new Category(-1, "N/A"))
+                        select new
+                        {
+                            ProductId = prod.Id,
+                            ProductName = prod.Name,
+                            CategoryId = atLeastOneCat.Id,
+                            CategoryName = atLeastOneCat.Name
+                        };
+            */
+
+            var query = ProductsDatabase.Products
+                .GroupJoin(
+                    ProductsDatabase.Categories,
+                    prod => prod.CategoryId,
+                    cat => cat.Id,
+                    (prod, catList) => new
+                    {
+                        ProductId = prod.Id,
+                        ProductName = prod.Name,
+                        Categories = catList.DefaultIfEmpty(new Category(-1, "N/A"))
+                    })
+                .SelectMany(
+                    groupJoin => groupJoin.Categories,
+                    (groupJoin, cat) => new
+                    {
+                        groupJoin.ProductId,
+                        groupJoin.ProductName,
+                        CategoryId = cat.Id,
+                        CategoryName = cat.Name
+                    });
+
+            foreach (var result in query)
+            {
+                Console.WriteLine($"#{result.ProductId} - {result.ProductName}, category: {result.CategoryName}");
             }
         }
     }
