@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace LinqExercises
 {
@@ -35,7 +36,8 @@ namespace LinqExercises
             // Example_20_Contains_WithPersons();
             // Example_InnerJoin_ProductsWithCategories();
             // Example_GroupJoin_CategoriesWithCorrespondingProducts();
-            Example_GroupJoin_AllProductsWithCategories();
+            // Example_GroupJoin_AllProductsWithCategories();
+            Example_ToLookup_WithProductAndCategories();
 
             //foreach (Person p in PersonsDatabase.Persons)
             //{
@@ -709,6 +711,56 @@ namespace LinqExercises
             foreach (var result in query)
             {
                 Console.WriteLine($"#{result.ProductId} - {result.ProductName}, category: {result.CategoryName}");
+            }
+        }
+
+        private static void Example_ToDictionary_WithCategories()
+        {
+            /*
+            var result = ProductsDatabase.Categories.ToDictionary(
+                keySelector: cat => cat.Id,
+                elementSelector: cat => new
+                {
+                    cat.IsPhysical,
+                    cat.IsVirtual
+                });
+            */
+
+            var result = ProductsDatabase.Categories.ToDictionary(
+                keySelector: cat => cat.Id,
+                elementSelector: cat => cat);
+
+            if (result.TryGetValue(100, out Category element))
+            {
+                Console.WriteLine(element.Name);
+            }
+        }
+
+        private static void Example_ToLookup_WithProductAndCategories()
+        {
+            var query = ProductsDatabase.Products
+                .Join(
+                    ProductsDatabase.Categories,
+                    prod => prod.CategoryId,
+                    cat => cat.Id,
+                    (prod, cat) => new
+                    {
+                        ProductId = prod.Id,
+                        ProductName = prod.Name,
+                        CategoryId = cat.Id,
+                        CategoryName = cat.Name
+                    });
+
+            // Doesn't work because there are multiple products with the same category name key
+            // var dictionaryOfCategories = query.ToDictionary(keySelector: join => join.CategoryName);
+
+            var lookupCategory = query.ToLookup(keySelector: join => join.CategoryName);
+
+            var laptopProducts = lookupCategory["Laptopuri"];
+            Console.WriteLine("Products from Laptops category:");
+            foreach(var p in laptopProducts)
+            {
+                Console.WriteLine($"#{p.ProductId} - {p.ProductName}");
             }
         }
     }

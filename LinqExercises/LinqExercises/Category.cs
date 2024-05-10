@@ -20,6 +20,10 @@ namespace LinqExercises
             get;
         }
 
+        public bool IsVirtual { get; set; }
+
+        public bool IsPhysical { get; set; }
+
         public void Print()
         {
             Console.WriteLine($"#{Id}) Category '{Name}'");
