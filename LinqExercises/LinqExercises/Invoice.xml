@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<content>
+    <invoice>
+        <header>
+            <vendor> /**/
+                <company></company>
+                <address></address>
+                <vat></vat>
+            </vendor>
+            <customer> /**/
+                <company></company>
+                <address></address>
+                <vat></vat>
+            </customer>
+        </header>
+        <details>
+            <row id="1"> /**/
+                <product></product>
+                <quantity></quantity>
+                <unitOfMeasure></unitOfMeasure>
+                <unitPrice></unitPrice>
+                <quantity></quantity>
+                <vat></vat>
+                <netWitoutVat></netWitoutVat>
+                <bruttoWithVat></bruttoWithVat>
+            </row>
+        </details>
+        <footer>
+            
+        </footer>
+    </invoice>  
+</content>
+

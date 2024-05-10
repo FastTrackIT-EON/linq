@@ -48,7 +48,8 @@ namespace LinqExercises
             {
                 while (reader.Read())
                 {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "Person")
+                    if (reader.NodeType == XmlNodeType.Element && 
+                        string.Equals(reader.Name, "Person", StringComparison.OrdinalIgnoreCase))
                     {
                         string firstName = reader.GetAttribute("firstName");
                         string lastName = reader.GetAttribute("lastName");

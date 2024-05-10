@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Category.cs" />
     <Compile Include="Gender.cs" />
+    <Compile Include="Generators.cs" />
     <Compile Include="Person.cs" />
     <Compile Include="PersonsDatabase.cs" />
     <Compile Include="Product.cs" />
@@ -59,6 +60,7 @@
     <Content Include="CategoriesWithProducts.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Invoice.xml" />
     <Content Include="Persons.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
